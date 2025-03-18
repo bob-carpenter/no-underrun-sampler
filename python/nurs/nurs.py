@@ -4,6 +4,7 @@ import tqdm
 
 # tree is tuple(selected[0], logp[1], left[2], right[3], logp_left[4], logp_right[5])
 
+
 def nurs(rng, logpdf, theta_init, num_draws, step_size, max_doublings, threshold):
     dim = np.size(theta_init)
     log_step_size = np.log(step_size)
@@ -51,14 +52,14 @@ def nurs(rng, logpdf, theta_init, num_draws, step_size, max_doublings, threshold
         return u / np.linalg.norm(u)
 
     def metropolis(theta, rho):
-        lp_theta = logpdf(theta) # computed twice (also by leaf)
+        lp_theta = logpdf(theta)  # computed twice (also by leaf)
         s = (rng.random() - 0.5) * step_size
         theta_star = theta + s * rho
         lp_theta_star = logpdf(theta_star)
         accept_prob = np.min([1.0, np.exp(lp_theta_star - lp_theta)])
         accept = rng.binomial(1, accept_prob)
         return (theta_star if accept else theta), accept
-    
+
     def transition(theta):
         rho = random_direction()
         theta, accept = metropolis(theta, rho)
@@ -80,9 +81,8 @@ def nurs(rng, logpdf, theta_init, num_draws, step_size, max_doublings, threshold
         accepts = np.zeros(num_draws, int)
         depths = np.zeros(num_draws, int)
         draws[0] = theta_init
-        for m in tqdm.tqdm(range(1, num_draws)):
+        for m in tqdm.tqdm(range(1, num_draws), initial=1, total=num_draws):
             draws[m, :], accepts[m], depths[m] = transition(draws[m - 1])
         return draws, accepts, depths
 
     return sample()
-

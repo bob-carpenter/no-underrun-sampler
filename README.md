@@ -14,7 +14,8 @@ a gradient).
 
 ## Reference implementations
 
-* Basic NURS:  `python/nurs/nurs_reference.py`
+* NURS:  `python/nurs/nurs.py`
+* NURS with step size adaptation:  `python/nurs/nurs_step_adapt.py`
 
 ## Running the built-in examples
 
@@ -22,6 +23,9 @@ a gradient).
 cd python/nurs
 python3 examples.py
 ```
+
+In `examples.py`, Each example is formatted as a function with calls at the end.
+Comment out tests to speed up testing specific examples.
 
 ## References
 
@@ -35,13 +39,12 @@ method](https://arxiv.org/abs/2501.18548v2). *arXiv* 2501.18548 v2.
 
 * Andersen, Hans C.; Diaconis, Persi. 2007.  [Hit and run as a unifying
   device](https://www.numdam.org/item/JSFS_2007__148_4_5_0/). *Journal
-  de la Société française de statistique & Revue de statistique
-  appliquée* 148(4):5--28.
+  de la Société Française de Statistique* 148(4):5--28.
 
 * Matthew D. Hoffman and Andrew
-  Gelman.  2014. [The No-U-Turn Sampler: Adaptively Setting Path Lengths in Hamiltonian Monte Carlo](https://www.jmlr.org/papers/volume15/hoffman14a/hoffman14a.pdf). *Journal
+  Gelman.  2014. [The No-U-Turn Sampler: Adaptively setting path lengths in Hamiltonian Monte Carlo](https://www.jmlr.org/papers/volume15/hoffman14a/hoffman14a.pdf). *Journal
   of Machine Learning Research* 15(2014):1593-1623.
 
-* Neal, Radford M. 2003. [Slice Sampling](https://projecteuclid.org/journals/annals-of-statistics/volume-31/issue-3/Slice-sampling/10.1214/aos/1056562461.full). *Annals of Statistics* 31(3): 705–767.
+* Neal, Radford M. 2003. [Slice sampling](https://projecteuclid.org/journals/annals-of-statistics/volume-31/issue-3/Slice-sampling/10.1214/aos/1056562461.full). *Annals of Statistics* 31(3): 705–767.
 
 
