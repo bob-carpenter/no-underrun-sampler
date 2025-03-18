@@ -2,6 +2,8 @@ import numpy as np
 from scipy.stats import norm
 import nurs
 import nurs_step_adapt as nurs_ssa
+import nurs_step_direct_adapt as nurs_sda
+
 import pandas as pd
 import plotnine as pn
 import numpy as np
@@ -50,7 +52,7 @@ def normal_logpdf(x):
     return -0.5 * np.sum(x**2)
 
 def funnel_logpdf(x):
-    return 
+    return 0.0
 
 
 def scatterplot(xs, ys, xlab="x", ylab="y", title=None):
@@ -65,6 +67,33 @@ def scatterplot(xs, ys, xlab="x", ylab="y", title=None):
 
 
 # =================================
+
+
+def example_normal_sda(
+    num_draws=1_000_000, min_step_size=0.5, threshold=1e-5, max_tree_doublings=4,
+    seed=1234, max_step_doublings=8, ensemble_size=10
+):
+    print("FITTING NORMAL WITH DIRECTION AND STEP-SIZE ADAPTIVE NURS")
+    rng = np.random.default_rng(seed)
+    dim = 2
+    theta_init = rng.normal(size=(ensemble_size, dim))
+    draws, accepts, depths = nurs_sda.nurs_sda(
+        rng, normal_logpdf, theta_init, num_draws, ensemble_size,
+        min_step_size, max_tree_doublings, max_step_doublings, threshold
+    )
+    mean = np.mean(draws, axis=0)
+    sd = np.std(draws, axis=0)
+    print(f"     {mean=}\n       {sd=}")
+
+    sp = scatterplot(
+        draws[:, 0], draws[:, 1], "x1", "x2", title="Std Normal Scatterplot"
+    )
+    sp.show()
+
+    true_mean = np.zeros(2)
+    true_sd = np.ones(2)
+    rp = plot_running_rmsse(draws, true_mean, true_sd)
+    rp.show()
 
 
 def example_normal_ssa(
@@ -131,6 +160,8 @@ def example_independent_rmsse():
 
 
 # COMMENT OUT TESTS TO SKIP
-example_independent_rmsse()
-example_normal()
-example_normal_ssa()
+
+# example_independent_rmsse()
+# example_normal()
+# example_normal_ssa()
+example_normal_sda()
