@@ -70,15 +70,15 @@ def scatterplot(xs, ys, xlab="x", ylab="y", title=None):
 
 
 def example_normal_sda(
-    num_draws=1_000_000, min_step_size=0.5, threshold=1e-5, max_tree_doublings=4,
-    seed=1234, max_step_doublings=8, ensemble_size=10
+    num_draws=10_000, min_step_size=0.25, threshold=0.0, max_tree_doublings=1,
+    seed=1234, max_step_doublings=1, ensemble_size=10
 ):
     print("FITTING NORMAL WITH DIRECTION AND STEP-SIZE ADAPTIVE NURS")
     rng = np.random.default_rng(seed)
     dim = 2
     theta_init = rng.normal(size=(ensemble_size, dim))
     draws, accepts, depths = nurs_sda.nurs_sda(
-        rng, normal_logpdf, theta_init, num_draws, ensemble_size,
+        rng, normal_logpdf, theta_init, num_draws, 
         min_step_size, max_tree_doublings, max_step_doublings, threshold
     )
     mean = np.mean(draws, axis=0)
@@ -161,7 +161,7 @@ def example_independent_rmsse():
 
 # COMMENT OUT TESTS TO SKIP
 
-# example_independent_rmsse()
-# example_normal()
-# example_normal_ssa()
 example_normal_sda()
+# example_normal_ssa()
+# example_normal()
+# example_independent_rmsse()

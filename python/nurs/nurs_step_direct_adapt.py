@@ -10,7 +10,6 @@ def nurs_sda(
     logpdf,
     theta_inits,
     num_draws,
-    ensemble_size,
     min_step_size,
     max_tree_doublings,
     max_step_doublings,
@@ -18,7 +17,8 @@ def nurs_sda(
 ):
     dim = np.size(theta_inits[0])
     log_threshold = np.log(threshold)
-
+    ensemble_size = np.shape(theta_inits)[0]
+    
     def stopping_condition(tree, current_step_size):
         log_epsilon = log_threshold + np.log(current_step_size) + tree[1]
         return tree[4] < log_epsilon and tree[5] < log_epsilon
@@ -31,7 +31,12 @@ def nurs_sda(
         lp1 = tree1[1]
         lp2 = tree2[1]
         lp12 = logsumexp([lp1, lp2])
-        update = rng.binomial(1, np.exp(lp2 - lp12))
+
+        # Barker:
+        # update = rng.binomial(1, np.exp(lp2 - lp12))
+        # Metropolis:
+        update = rng.binomial(1, np.min([1.0, np.exp(lp2 - lp1)]))
+
         selected = tree2[0] if update else tree1[0]
         if direction == 1:
             return (selected, lp12, tree1[2], tree2[3], tree1[4], tree2[5])
@@ -75,8 +80,8 @@ def nurs_sda(
         directions = rng.integers(0, 2, size=max_tree_doublings)
         current_step_size = min_step_size
         for _ in range(max_step_doublings):
-            theta, accept = metropolis(theta, rho, current_step_size)
-            tree = leaf(theta)
+            theta_met, accept = metropolis(theta, rho, current_step_size)
+            tree = leaf(theta_met)
             for tree_depth in range(max_tree_doublings):
                 direction = directions[tree_depth]
                 theta_mid = tree[3] if direction == 1 else tree[2]
@@ -95,7 +100,6 @@ def nurs_sda(
 
     def sample():
         ensemble = theta_inits
-
         draws = np.zeros((num_draws, dim))
         accepts = np.zeros(num_draws, int)
         depths = np.zeros(num_draws, int)
