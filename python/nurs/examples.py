@@ -161,7 +161,7 @@ def example_independent_rmsse():
 
 # COMMENT OUT TESTS TO SKIP
 
-example_normal_sda()
+example_normal_sda(min_step_size=1., max_tree_doublings=5)
 # example_normal_ssa()
 # example_normal()
 # example_independent_rmsse()

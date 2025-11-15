@@ -74,9 +74,9 @@ def nurs_sda(
         return diff / np.linalg.norm(diff)
     
     def transition(ensemble):
-        idx, idx_comp = rng.choice(ensemble_size, size=2, replace=False)
-        theta, theta_comp = ensemble[idx], ensemble[idx_comp]
-        rho = diff_direction(theta, theta_comp)
+        idx, idx_comp1, idx_comp2 = rng.choice(ensemble_size, size=3, replace=False) 
+        theta, theta_comp1, theta_comp2 = ensemble[idx], ensemble[idx_comp1], ensemble[idx_comp2]
+        rho = diff_direction(theta_comp1, theta_comp2) # changed to side move
         directions = rng.integers(0, 2, size=max_tree_doublings)
         current_step_size = min_step_size
         for _ in range(max_step_doublings):
@@ -92,19 +92,23 @@ def nurs_sda(
                     break
                 tree = combine_trees(tree, tree_next, direction)
                 if stopping_condition(tree, current_step_size):
-                    return tree[0], accept, tree_depth
+                    theta_star = tree[0]
+                    ensemble[idx] = theta_star
+                    return ensemble, accept, tree_depth
             current_step_size *= 2.0
         theta_star = tree[0]
         ensemble[idx] = theta_star
-        return theta_star, accept, tree_depth
+        return ensemble, accept, tree_depth
 
     def sample():
         ensemble = theta_inits
-        draws = np.zeros((num_draws, dim))
+        draws = np.zeros((num_draws, ensemble_size, dim))
         accepts = np.zeros(num_draws, int)
         depths = np.zeros(num_draws, int)
         for m in tqdm.tqdm(range(num_draws)):
-            draws[m, :], accepts[m], depths[m] = transition(ensemble)
+            ensemble, accepts[m], depths[m] = transition(ensemble)
+            draws[m, :, :] = ensemble
+        draws = draws.reshape((num_draws * ensemble_size, dim))
         return draws, accepts, depths
 
     return sample()
